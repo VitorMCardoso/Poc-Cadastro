@@ -1,0 +1,29 @@
+version: '3'
+
+services:
+  bee4-homol-postgres-compose:
+    image: postgres
+    environment:
+      POSTGRES_PASSWORD: "Postgres2022!"
+    ports:
+      - "15432:5432"
+    volumes:
+      - /home/vitorc/Documents/Pessoal/Docker-Compose/PostgreSQL:/var/lib/postgresql/data
+    networks:
+      - homol-postgres-compose-network
+
+  bee4-homol-pgadmin-compose:
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: "vitorcardoso@bee4.com.br"
+      PGADMIN_DEFAULT_PASSWORD: "Postgres2022!"
+    ports:
+      - "16543:80"
+    depends_on:
+      - bee4-homol-postgres-compose
+    networks:
+      - homol-postgres-compose-network
+
+networks:
+  homol-postgres-compose-network:
+    driver: bridge
