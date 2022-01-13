@@ -10,6 +10,7 @@ import br.com.bee4.application.service.InvestorService;
 import br.com.bee4.infra.streaming.producer.IntermediaryProducer;
 import br.com.bee4.infra.utils.Constants;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import io.vertx.core.eventbus.EventBus;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -29,13 +30,13 @@ public class InvestorResource {
 
     private final InvestorService investorService;
     private final IntermediaryService intermediaryService;
-    private final IntermediaryProducer intermediaryProducer;
+    EventBus eventBus;
 
     @Inject
-    public InvestorResource(InvestorService investorService, IntermediaryService intermediaryService, IntermediaryProducer intermediaryProducer) {
+    public InvestorResource(InvestorService investorService, IntermediaryService intermediaryService, EventBus eventBus) {
         this.investorService = investorService;
         this.intermediaryService = intermediaryService;
-        this.intermediaryProducer = intermediaryProducer;
+        this.eventBus = eventBus;
     }
 
     @POST
@@ -49,7 +50,7 @@ public class InvestorResource {
 
     @PATCH
     @Path(Constants.PATH_CPF_INVESTOR)
-    public Response completeRegister(@PathParam("cpf") String cpf, @Valid UpdateInvestorRequest updateInvestorRequest) throws JsonProcessingException {
+    public Response completeRegister(@PathParam("cpf") String cpf, @Valid UpdateInvestorRequest updateInvestorRequest) {
         Optional<Intermediary> intermediaryOptional = this.intermediaryService.findByEmailOptional(updateInvestorRequest.getEmail());
         if (intermediaryOptional.isPresent()) {
             this.intermediaryService.updateInvestor(intermediaryOptional.get(), this.investorService.getInvestorByCpf(cpf));
@@ -57,7 +58,7 @@ public class InvestorResource {
             return Response.ok().status(404).build();
         }
         Investor investor = this.investorService.completeRegister(updateInvestorRequest.getPassword(), updateInvestorRequest.getEmail(), cpf);
-        intermediaryProducer.sendInvestorIntermediary(intermediaryOptional.get());
+        eventBus.send("intermediary", intermediaryOptional.get());
         return Response.ok(investor).status(200).build();
     }
 

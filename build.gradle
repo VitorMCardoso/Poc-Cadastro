@@ -29,11 +29,14 @@ dependencies {
     implementation 'io.quarkus:quarkus-jdbc-postgresql:2.6.1.Final'
     // https://mvnrepository.com/artifact/io.quarkus/quarkus-resteasy-jackson
     implementation 'io.quarkus:quarkus-resteasy-jackson:2.6.1.Final'
-
+    // https://mvnrepository.com/artifact/io.quarkus/quarkus-vertx
+    implementation 'io.quarkus:quarkus-vertx:2.6.2.Final'
+    // https://mvnrepository.com/artifact/io.quarkus/quarkus-resteasy-mutiny
+    implementation 'io.quarkus:quarkus-resteasy-mutiny:2.6.2.Final'
 }
 
 group 'br.com.bee4'
-version '1.0-SNAPSHOT'
+version '1.0.0'
 
 java {
     sourceCompatibility = JavaVersion.VERSION_11
